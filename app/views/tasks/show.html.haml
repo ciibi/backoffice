@@ -1,0 +1,60 @@
+#jobs
+	.job
+		%h1= @task.title
+		%p= @task.description
+		%p= @task.company
+		/ %button.btn.btn-default= link_to "Complete Task", @task.url
+		/ =button_tag 'Go' , class: 'search-button' , type: :submit
+		%input{:type => "Submit"}
+
+#container
+	#map
+	#right-panel
+
+:javascript
+	function initMap() {
+	var directionsDisplay = new google.maps.DirectionsRenderer;
+	var directionsService = new google.maps.DirectionsService;
+	var map = new google.maps.Map(document.getElementById('map'), {
+	zoom: 7,
+	center: {lat: 41.85, lng: -87.65}
+	});
+	directionsDisplay.setMap(map);
+	directionsDisplay.setPanel(document.getElementById('right-panel'));
+	document.getElementById('submit').addEventListener('click', function() {
+	calculateAndDisplayRoute(directionsService, directionsDisplay);
+	document.getElementById('right-panel').style.display = 'block';
+	document.getElementById('map').style.height = '300px';
+	});
+	}
+	function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+	var start = "anhembi centro de eventos";
+	var end = "shopping morumbi";
+	directionsService.route({
+	origin: start,
+	destination: end,
+	waypoints: [
+	{
+	location:"Av. Pres. Juscelino Kubitschek, 1489",
+	stopover:true
+	},{
+	location:"R. Dr. Renato Paes de Barros, 682",
+	stopover:true
+	}],
+	optimizeWaypoints: true,
+	travelMode: google.maps.TravelMode.BICYCLING
+	}, function(response, status) {
+	if (status === google.maps.DirectionsStatus.OK) {
+	directionsDisplay.setDirections(response);
+	} else {
+	window.alert('Directions request failed due to ' + status);
+	}
+	});
+	}
+
+= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=AIzaSyDpH3CDWYU43tJkHw0ie9C2xhHUPKe__qo&callback=initMap", :defer => "defer", :async => "async"
+
+#links
+	= link_to "Home", root_path, class: "btn btn-sm btn-default"
+	= link_to "Edit", edit_task_path(@task), class: "btn btn-sm btn-default"
+	= link_to "Delete", task_path(@task), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-default"
